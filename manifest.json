@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Job Site Saver",
+  "version": "1.0",
+  "description": "Save and organize your favorite job posting sites!",
+  "permissions": ["storage", "tabs"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
