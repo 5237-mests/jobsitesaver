@@ -1,52 +1,3 @@
-// // Get elements from the popup
-// const siteNameInput = document.getElementById("siteName");
-// const siteUrlInput = document.getElementById("siteUrl");
-// const saveButton = document.getElementById("saveButton");
-// const sitesList = document.getElementById("sitesList");
-
-// // Auto-fill current tab's title and URL
-// chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-//   const currentTab = tabs[0];
-//   siteNameInput.value = currentTab.title; // Auto-fill title
-//   siteUrlInput.value = currentTab.url; // Auto-fill URL
-// });
-
-// // Load saved sites when the popup opens
-// chrome.storage.sync.get({ sites: [] }, function (data) {
-//   data.sites.forEach((site) => {
-//     addSiteToList(site);
-//   });
-// });
-
-// saveButton.addEventListener("click", () => {
-//   const siteName = siteNameInput.value;
-//   const siteUrl = siteUrlInput.value;
-
-//   if (siteName && siteUrl) {
-//     chrome.storage.sync.get({ sites: [] }, function (data) {
-//       const newSite = { name: siteName, url: siteUrl };
-//       data.sites.push(newSite);
-//       chrome.storage.sync.set({ sites: data.sites }, () => {
-//         addSiteToList(newSite);
-//         siteNameInput.value = "";
-//         siteUrlInput.value = "";
-//         alert("Site saved successfully!"); // Confirmation message
-//       });
-//     });
-//   }
-// });
-
-// // Helper function to add a site to the list
-// function addSiteToList(site) {
-//   const li = document.createElement("li");
-//   const link = document.createElement("a");
-//   link.href = site.url;
-//   link.textContent = site.name;
-//   link.target = "_blank";
-//   li.appendChild(link);
-//   sitesList.appendChild(li);
-// }
-
 // Get elements from the popup
 const siteNameInput = document.getElementById("siteName");
 const siteUrlInput = document.getElementById("siteUrl");
@@ -57,6 +8,7 @@ const saveButton = document.getElementById("saveButton");
 const sitesList = document.getElementById("sitesList");
 const editFolderButton = document.getElementById("editFolderButton");
 const deleteFolderButton = document.getElementById("deleteFolderButton");
+const searchInput = document.getElementById("searchInput");
 
 // Auto-fill current tab's title and URL
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -128,6 +80,19 @@ addFolderButton.addEventListener("click", () => {
   }
 });
 
+// Show success or error message
+function showMessage(message, isSuccess) {
+  const messageDiv = document.getElementById("message");
+  messageDiv.textContent = message;
+  messageDiv.className = isSuccess ? "success" : "error";
+  messageDiv.classList.remove("hidden");
+
+  // Hide the message after 3 seconds
+  setTimeout(() => {
+    messageDiv.classList.add("hidden");
+  }, 3000);
+}
+
 // Save site when the button is clicked
 saveButton.addEventListener("click", () => {
   const siteName = siteNameInput.value;
@@ -142,7 +107,8 @@ saveButton.addEventListener("click", () => {
         addSiteToList(newSite);
         siteNameInput.value = "";
         siteUrlInput.value = "";
-        alert("Site saved successfully!"); // Confirmation message
+        showMessage("Site saved successfully!", true);
+        // alert(); // Confirmation message
       });
     });
   }
@@ -214,11 +180,30 @@ deleteFolderButton.addEventListener("click", () => {
 // Helper function to add a site to the list
 function addSiteToList(site) {
   const li = document.createElement("li");
+  li.className = "sitelist";
   const link = document.createElement("a");
+  link.className = "link1";
   link.href = site.url;
   link.textContent = `${site.name} (${site.folder})`; // Show folder name
   link.target = "_blank";
+
+  // Add edit and delete buttons
+  // Delete button
+  const deleteButton = document.createElement("button");
+  deleteButton.innerHTML = '<i class="fa fa-close"></i>';
+  deleteButton.className = "btn btn-danger delete-button1";
+  deleteButton.addEventListener("click", () => {
+    chrome.storage.sync.get({ sites: [] }, function (data) {
+      data.sites = data.sites.filter((s) => s.url !== site.url);
+      chrome.storage.sync.set({ sites: data.sites }, () => {
+        // remove this li
+        li.remove();
+        showMessage("Site deleted successfully!", true);
+      });
+    });
+  });
   li.appendChild(link);
+  li.appendChild(deleteButton);
   sitesList.appendChild(li);
 }
 
@@ -235,3 +220,21 @@ function reloadPopupContent() {
     loadSites(data.sites);
   });
 }
+
+// Search sites
+function loadSites(sites) {
+  sitesList.innerHTML = "";
+  sites.forEach((site, index) => addSiteToList(site, index));
+}
+
+searchInput.addEventListener("input", function () {
+  const query = this.value.toLowerCase();
+  chrome.storage.sync.get({ sites: [] }, function (data) {
+    const filteredSites = data.sites.filter(
+      (site) =>
+        site.name.toLowerCase().includes(query) ||
+        site.url.toLowerCase().includes(query)
+    );
+    loadSites(filteredSites);
+  });
+});

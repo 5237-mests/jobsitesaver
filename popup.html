@@ -8,29 +8,46 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="">
     <h1>Job Site Saver</h1>
     <input type="text" id="siteName" placeholder="Site Title" />
     <input type="text" id="siteUrl" placeholder="Site URL" readonly />
-    <select id="folderSelect">
-      <option value="default">Default</option>
-    </select>
-    <input type="text" id="newFolderInput" placeholder="New Folder Name" />
     <div class="d-flex">
-      <button id="addFolderButton" class="btn btn-secondary">Add Folder</button>
-
+      <select id="folderSelect">
+        <option value="default">Default</option>
+      </select>
+      <input type="text" id="newFolderInput" placeholder="type new folder" />
+    </div>
+    <div class="d-flex justify-content-between">
+      <button id="addFolderButton" class="btn btn-primary1">Add Folder</button>
       <button id="saveButton" class="btn btn-primary">Save Site</button>
     </div>
-    <div class="my-1 d-flex">
-      <select name="select" id="select" class="">
-        <option value="all">All Folders</option>
-      </select>
-      <button id="editFolderButton" class="btn">Edit Folder</button>
-      <button id="deleteFolderButton" class="btn">Delete Folder</button>
+    <div id="message" class="hidden"></div>
+    <div class="my-1">
+      <div>
+        <select name="select" id="select">
+          <option value="all">All Folders</option>
+        </select>
+      </div>
     </div>
-    <ul id="sitesList"></ul>
+
+    <div class="d-flex justify-content-between">
+      <button id="editFolderButton" class="btn btn-primary">Edit Folder</button>
+      <button id="deleteFolderButton" class="btn btn-danger">
+        Delete Folder
+      </button>
+    </div>
+    <!-- Search box -->
+    <div>
+      <input type="text" id="searchInput" placeholder="search sites..." />
+    </div>
+    <ol id="sitesList" class="list-group list-group-flush overflow-auto"></ol>
     <script src="popup.js"></script>
   </body>
 </html>
