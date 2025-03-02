@@ -47,19 +47,19 @@ chrome.storage.sync.get({ folders: [] }, function (data) {
 });
 
 // Filter sites when a folder is selected
-// filterSelect.addEventListener("change", () => {
-//   console.log("kk clicked");
-//   const selectedFolder = filterSelect.value;
-//   sitesList.innerHTML = ""; // Clear the list
+filterSelect.addEventListener("change", () => {
+  console.log("kk clicked");
+  const selectedFolder = filterSelect.value;
+  sitesList.innerHTML = ""; // Clear the list
 
-//   chrome.storage.sync.get({ sites: [] }, function (data) {
-//     data.sites.forEach((site) => {
-//       if (selectedFolder === "all" || site.folder === selectedFolder) {
-//         addSiteToList(site);
-//       }
-//     });
-//   });
-// });
+  chrome.storage.sync.get({ sites: [] }, function (data) {
+    data.sites.forEach((site) => {
+      if (selectedFolder === "all" || site.folder === selectedFolder) {
+        addSiteToList(site);
+      }
+    });
+  });
+});
 
 // Add a new folder
 addFolderButton.addEventListener("click", () => {
@@ -75,6 +75,7 @@ addFolderButton.addEventListener("click", () => {
           option.textContent = newFolderName;
           folderSelect.appendChild(option);
           newFolderInput.value = ""; // Clear input
+          showMessage("Folder added successfully!", true);
         });
       }
     });
@@ -116,43 +117,43 @@ saveButton.addEventListener("click", () => {
 });
 
 // Edit selected folder
-// editFolderButton.addEventListener("click", () => {
-//   const selectedFolder = filterSelect.value;
-//   const newFolderName = prompt("Enter new folder name:", selectedFolder);
-//   if (newFolderName && newFolderName !== selectedFolder) {
-//     chrome.storage.sync.get({ folders: [], sites: [] }, function (data) {
-//       // Update folder name in folders array
-//       const folderIndex = data.folders.indexOf(selectedFolder);
-//       if (folderIndex !== -1) {
-//         data.folders[folderIndex] = newFolderName;
-//       }
+editFolderButton.addEventListener("click", () => {
+  const selectedFolder = filterSelect.value;
+  const newFolderName = prompt("Enter new category name:", selectedFolder);
+  if (newFolderName && newFolderName !== selectedFolder) {
+    chrome.storage.sync.get({ folders: [], sites: [] }, function (data) {
+      // Update folder name in folders array
+      const folderIndex = data.folders.indexOf(selectedFolder);
+      if (folderIndex !== -1) {
+        data.folders[folderIndex] = newFolderName;
+      }
 
-//       // Update folder name in sites
-//       data.sites.forEach((site) => {
-//         if (site.folder === selectedFolder) {
-//           site.folder = newFolderName;
-//         }
-//       });
+      // Update folder name in sites
+      data.sites.forEach((site) => {
+        if (site.folder === selectedFolder) {
+          site.folder = newFolderName;
+        }
+      });
 
-//       // Save updated data
-//       chrome.storage.sync.set(
-//         { folders: data.folders, sites: data.sites },
-//         () => {
-//           populateFolderDropdown(data.folders);
-//           loadSites(data.sites);
+      // Save updated data
+      chrome.storage.sync.set(
+        { folders: data.folders, sites: data.sites },
+        () => {
+          populateFolderDropdown(data.folders);
+          loadSites(data.sites);
 
-//           // Refresh popup
-//           reloadPopupContent();
-//         }
-//       );
-//     });
-//     reloadPopupContent();
-//   }
-// });
+          // Refresh popup
+          reloadPopupContent();
+        }
+      );
+    });
+    reloadPopupContent();
+    showMessage("Folder renamed successfully!", true);
+  }
+});
 
 // Delete selected folder
 deleteFolderButton.addEventListener("click", () => {
-  console.log("clicled");
   const selectedFolder = filterSelect.value;
   if (
     confirm(`Are you sure you want to delete the folder "${selectedFolder}"?`)
@@ -175,6 +176,7 @@ deleteFolderButton.addEventListener("click", () => {
           reloadPopupContent();
         }
       );
+      showMessage("Folder deleted successfully!", true);
     });
   }
 });
